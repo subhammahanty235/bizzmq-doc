@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BizzMQ Node Documentation</title>
+    <link rel="stylesheet" href="../style//docs.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <span>BizzMQ</span>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <div class="dropdown">
+                    <button class="dropdown-btn active">Documentation <i class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-content">
+                        <a href="/docs/node-docs.html" class="active">BizzMQ Node</a>
+                        <a href="/docs/go-docs.html">BizzMQ Go</a>
+                    </div>
+                </div>
+                <a href="/getting-started">Getting Started</a>
+                <a href="/examples">Examples</a>
+                <a href="https://github.com/subhammahanty235/bizzmq-node/issues" target="_blank">Report Bug</a>
+            </div>
+            <div class="cta-buttons">
+                <a href="https://github.com/subhammahanty235/bizzmq-node" class="btn-secondary"><i
+                        class="fab fa-github"></i> GitHub</a>
+                <a href="/getting-started" class="btn-primary">Get Started</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="docs-container">
+        <aside class="docs-sidebar">
+            <div class="docs-nav">
+                <h3>Documentation</h3>
+                <ul class="nav-list">
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#prerequisites">Prerequisites</a></li>
+                    <li><a href="#quick-start">Quick Start</a>
+                        <ul>
+                            <li><a href="#basic-usage">Basic Usage</a></li>
+                            <li><a href="#using-dlq">Using Dead Letter Queue</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#complete-example">Complete Example</a></li>
+                    <li><a href="#api-reference">API Reference</a>
+                        <ul>
+                            <li><a href="#constructor">Constructor</a></li>
+                            <li><a href="#queue-management">Queue Management</a></li>
+                            <li><a href="#dlq-management">DLQ Management</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#error-handling">Error Handling</a></li>
+                    <li><a href="#best-practices">Best Practices</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="docs-content">
+            <div class="docs-header">
+                <h1>BizzMQ Node Documentation</h1>
+                <div class="version-badge">v1.0.2</div>
+            </div>
+
+            <section id="introduction" class="docs-section">
+                <h2>Introduction</h2>
+                <p>BizzMQ is a lightweight Redis-based message queue with Dead Letter Queue support for Node.js applications. It provides a simple yet powerful way to implement asynchronous processing in your application.</p>
+                <div class="installation-command">
+                    <pre><code>npm install bizzmq</code></pre>
+                    <button class="copy-btn" aria-label="Copy installation command">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+            </section>
+
+            <section id="features" class="docs-section">
+                <h2>Features</h2>
+                <ul class="feature-list">
+                    <li>
+                        <div class="feature-title"><i class="fas fa-database"></i> Simple Redis-Based Queue</div>
+                        <div class="feature-desc">Leverage the power and reliability of Redis for message storage and processing</div>
+                    </li>
+                    <li>
+                        <div class="feature-title"><i class="fas fa-bolt"></i> Real-Time Processing</div>
+                        <div class="feature-desc">Utilizes Redis Pub/Sub for immediate job notification with fallback polling</div>
+                    </li>
+                    <li>
+                        <div class="feature-title"><i class="fas fa-envelope"></i> Dead Letter Queue</div>
+                        <div class="feature-desc">Automatic handling of failed messages with configurable DLQ</div>
+                    </li>
+                    <li>
+                        <div class="feature-title"><i class="fas fa-sync"></i> Retry Mechanism</div>
+                        <div class="feature-desc">Configurable retry attempts for failed jobs before they're moved to DLQ</div>
+                    </li>
+                    <li>
+                        <div class="feature-title"><i class="fas fa-save"></i> Message Persistence</div>
+                        <div class="feature-desc">Jobs are safely stored in Redis until successfully processed</div>
+                    </li>
+                    <li>
+                        <div class="feature-title"><i class="fas fa-exclamation-circle"></i> Error Handling</div>
+                        <div class="feature-desc">Robust error handling with detailed error tracking in failed messages</div>
+                    </li>
+                    <li>
+                        <div class="feature-title"><i class="fas fa-plug"></i> Easy Integration</div>
+                        <div class="feature-desc">Simple API that integrates easily with existing Node.js applications</div>
+                    </li>
+                    <li>
+                        <div class="feature-title"><i class="fas fa-feather"></i> Low Overhead</div>
+                        <div class="feature-desc">Minimal dependencies and lightweight design for optimal performance</div>
+                    </li>
+                </ul>
+            </section>
+
+            <section id="installation" class="docs-section">
+                <h2>Installation</h2>
+                <p>Install BizzMQ using npm:</p>
+                <div class="code-block">
+                    <pre><code>npm install bizzmq</code></pre>
+                </div>
+                <p>Or using yarn:</p>
+                <div class="code-block">
+                    <pre><code>yarn add bizzmq</code></pre>
+                </div>
+            </section>
+
+            <section id="prerequisites" class="docs-section">
+                <h2>Prerequisites</h2>
+                <ul>
+                    <li>Node.js (v14 or higher)</li>
+                    <li>Redis server (v5 or higher)</li>
+                </ul>
+            </section>
+
+            <section id="quick-start" class="docs-section">
+                <h2>Quick Start</h2>
+                
+                <div id="basic-usage" class="subsection">
+                    <h3>Basic Usage</h3>
+                    <div class="code-block">
+                        <pre><code>const BizzMQ = require('bizzmq');
+
+async function main() {
+  // Initialize with Redis connection string
+  const mq = new BizzMQ('redis://localhost:6379');
+  
+  // Create a queue
+  await mq.createQueue('email-queue');
+  
+  // Add a job to the queue
+  const jobData = {
+    to: "user@example.com",
+    subject: "Welcome to Our Service",
+    body: "Thank you for signing up!"
+  };
+  
+  await mq.publishMessageToQueue('email-queue', jobData);
+  
+  // Process jobs
+  const cleanup = await mq.consumeMessageFromQueue('email-queue', async (data) => {
+    console.log(`Sending email to ${data.to}`);
+    // Your job processing logic here
+    await sendEmail(data);
+    console.log('Email sent successfully');
+  });
+  
+  // When you're done, call the cleanup function
+  // cleanup();
+}
+
+main().catch(console.error);</code></pre>
+                    </div>
+                </div>
+
+                <div id="using-dlq" class="subsection">
+                    <h3>Using Dead Letter Queue</h3>
+                    <div class="code-block">
+                        <pre><code>const BizzMQ = require('bizzmq');
+
+async function main() {
+  const mq = new BizzMQ('redis://localhost:6379');
+  
+  // Create a queue with Dead Letter Queue enabled
+  await mq.createQueue('email-queue', {
+    config_dead_letter_queue: true,  // Enable DLQ
+    maxRetries: 3             // Try 3 times before moving to DLQ
+  });
+  
+  // Add a job
+  const jobData = {
+    to: "user@example.com",
+    subject: "Welcome to Our Service",
+    body: "Thank you for signing up!"
+  };
+  
+  await mq.publishMessageToQueue('email-queue', jobData, {
+    priority: "high"  // Optional job-specific options
+  });
+  
+  // Process jobs with error handling
+  const cleanup = await mq.consumeMessageFromQueue('email-queue', async (data, fullMessage) => {
+    try {
+      console.log(`Sending email to ${data.to}`);
+      await sendEmail(data);
+      console.log('Email sent successfully');
+    } catch (error) {
+      // This will trigger the retry mechanism
+      // After maxRetries, it will go to the DLQ
+      throw error;
+    }
+  });
+  
+  // Check failed jobs in DLQ
+  const failedJobs = await mq.getDeadLetterMessages('email-queue');
+  console.log(`Found ${failedJobs.length} failed jobs`);
+  
+  // Retry a specific failed job
+  if (failedJobs.length > 0) {
+    await mq.retryDeadLetterMessage('email-queue', failedJobs[0].id);
+  }
+}
+
+main().catch(console.error);</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="complete-example" class="docs-section">
+                <h2>Complete Example</h2>
+                <div class="code-block">
+                    <pre><code>const BizzMQ = require('bizzmq');
+
+async function example() {
+  // Initialize the queue system
+  const mq = new BizzMQ('redis://localhost:6379');
+  
+  // Create a queue with DLQ enabled
+  await mq.createQueue('firstqueue', {config_dead_letter_queue: true});
+  
+  // Prepare job data
+  const jobData = {
+    type: "email-data",
+    to: "user@example.com",
+    subject: "Welcome to Our Platform!",
+    body: "Thank you for joining. We're excited to have you onboard!",
+    createdAt: Date.now(),
+    priority: "high"
+  };
+  
+  // Publish message to queue with additional options
+  await mq.publishMessageToQueue('firstqueue', jobData, {
+    priority: "medium",
+  });
+  
+  console.log("Job published successfully");
+  
+  // Set up consumer
+  const cleanup = await mq.consumeMessageFromQueue('firstqueue', async (data) => {
+    console.log(`Processing ${data.type} job for ${data.to}`);
+    
+    // Simulate sending email
+    if (data.to.includes('#') || !data.to.includes('@')) {
+      throw new Error('Invalid email address');
+    }
+    
+    // Email sent successfully
+    console.log(`Email sent to ${data.to}`);
+  });
+  
+  // Later, check if any messages failed
+  setTimeout(async () => {
+    const failedJobs = await mq.getDeadLetterMessages('firstqueue');
+    console.log(`Found ${failedJobs.length} failed email jobs`);
+    
+    // Cleanup when done
+    cleanup();
+  }, 10000);
+}
+
+example().catch(err => console.error('Error in example:', err));</code></pre>
+                </div>
+            </section>
+
+            <section id="api-reference" class="docs-section">
+                <h2>API Reference</h2>
+
+                <div id="constructor" class="subsection">
+                    <h3>Constructor</h3>
+                    <div class="api-item">
+                        <h4><code>new BizzMQ(redisUri)</code></h4>
+                        <p>Creates a new BizzMQ instance connected to the specified Redis server.</p>
+                        <ul class="params">
+                            <li><code>redisUri</code> (String): Redis connection string (e.g., 'redis://localhost:6379')</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="queue-management" class="subsection">
+                    <h3>Queue Management</h3>
+                    
+                    <div class="api-item">
+                        <h4><code>async createQueue(queueName, options)</code></h4>
+                        <p>Creates a new queue. If the queue already exists, this operation is skipped.</p>
+                        <ul class="params">
+                            <li><code>queueName</code> (String): Name of the queue to create</li>
+                            <li><code>options</code> (Object): Queue configuration options
+                                <ul>
+                                    <li><code>config_dead_letter_queue</code> (Boolean): Whether to create a DLQ for this queue (default: false)</li>
+                                    <li><code>maxRetries</code> (Number): Maximum number of retry attempts before sending to DLQ (default: 3)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="api-item">
+                        <h4><code>async publishMessageToQueue(queueName, message, options)</code></h4>
+                        <p>Publishes a message to the specified queue.</p>
+                        <ul class="params">
+                            <li><code>queueName</code> (String): Name of the queue</li>
+                            <li><code>message</code> (Object): The message/job data to be processed</li>
+                            <li><code>options</code> (Object): Optional message-specific settings
+                                <ul>
+                                    <li><code>priority</code> (String): Message priority (e.g., "high", "medium", "low")</li>
+                                    <li>Any additional custom metadata for the message</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>Returns the generated message ID.</p>
+                    </div>
+
+                    <div class="api-item">
+                        <h4><code>async consumeMessageFromQueue(queueName, callback)</code></h4>
+                        <p>Starts consuming messages from the specified queue.</p>
+                        <ul class="params">
+                            <li><code>queueName</code> (String): Name of the queue to consume from</li>
+                            <li><code>callback</code> (Function): Async function to process each message
+                                <ul>
+                                    <li>Called with <code>(data, fullMessage)</code> parameters</li>
+                                    <li><code>data</code> contains the message data</li>
+                                    <li><code>fullMessage</code> contains the complete message object including metadata</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <p>Returns a cleanup function that should be called to stop consuming.</p>
+                    </div>
+                </div>
+
+                <div id="dlq-management" class="subsection">
+                    <h3>Dead Letter Queue Management</h3>
+                    
+                    <div class="api-item">
+                        <h4><code>async getDeadLetterMessages(queueName, limit)</code></h4>
+                        <p>Retrieves messages from the dead letter queue without removing them.</p>
+                        <ul class="params">
+                            <li><code>queueName</code> (String): Name of the original queue</li>
+                            <li><code>limit</code> (Number): Maximum number of messages to retrieve (default: 100)</li>
+                        </ul>
+                        <p>Returns an array of failed message objects.</p>
+                    </div>
+
+                    <div class="api-item">
+                        <h4><code>async retryDeadLetterMessage(queueName, messageId)</code></h4>
+                        <p>Moves a message from the dead letter queue back to the original queue for retry.</p>
+                        <ul class="params">
+                            <li><code>queueName</code> (String): Name of the original queue</li>
+                            <li><code>messageId</code> (String): ID of the message to retry</li>
+                        </ul>
+                        <p>Returns <code>true</code> if the message was successfully moved.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="error-handling" class="docs-section">
+                <h2>Error Handling</h2>
+                <p>When job processing fails (callback throws an error):</p>
+                <ol>
+                    <li>The error is caught and logged</li>
+                    <li>If retry is enabled, the job retry count is incremented</li>
+                    <li>If retry count < maxRetries, the job is added back to the queue</li>
+                    <li>If retry count >= maxRetries, the job is moved to the DLQ (if enabled)</li>
+                    <li>Error details are preserved with the job for debugging</li>
+                </ol>
+            </section>
+
+            <section id="best-practices" class="docs-section">
+                <h2>Best Practices</h2>
+                <ol class="best-practices-list">
+                    <li><strong>Enable Dead Letter Queues</strong> for production workloads to capture failed jobs</li>
+                    <li><strong>Set appropriate maxRetries</strong> based on the transient nature of expected failures</li>
+                    <li><strong>Include relevant metadata</strong> in your job data for easier debugging</li>
+                    <li><strong>Check your DLQ regularly</strong> for repeated failures that might indicate systemic issues</li>
+                    <li><strong>Implement graceful shutdown</strong> by calling the cleanup function returned by <code>consumeMessageFromQueue</code></li>
+                </ol>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-branding">
+                    <div class="footer-logo">
+                        <span>BizzMQ</span>
+                    </div>
+                    <p>A lightweight Redis-based message queue with Dead Letter Queue support</p>
+                    <div class="footer-social">
+                        <a href="https://github.com/subhammahanty235" target="_blank"><i class="fab fa-github"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-npm"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-links-column">
+                        <h4>Documentation</h4>
+                        <ul>
+                            <li><a href="/docs/node-docs.html">BizzMQ Node</a></li>
+                            <li><a href="/docs/go-docs.html">BizzMQ Go</a></li>
+                            <li><a href="/getting-started">Getting Started</a></li>
+                            <li><a href="/examples">Examples</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-links-column">
+                        <h4>Community</h4>
+                        <ul>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-node" target="_blank">GitHub</a></li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-node/issues" target="_blank">Report Bug</a></li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-node/issues" target="_blank">Request Feature</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-links-column">
+                        <h4>Contribute</h4>
+                        <ul>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-node" target="_blank">BizzMQ Node</a></li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-go" target="_blank">BizzMQ Go</a></li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-docs" target="_blank">Documentation</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 BizzMQ. Created by <a href="https://linkedin.com/subham-mahanty" target="_blank">Subham Mahanty</a>.</p>
+                <div class="footer-legal">
+                    <a href="/terms">Terms</a>
+                    <a href="/privacy">Privacy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
+            document.querySelector('.nav-links').classList.toggle('active');
+            this.classList.toggle('active');
+        });
+
+        // Copy to clipboard functionality
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const commandText = this.previousElementSibling.textContent;
+                navigator.clipboard.writeText(commandText)
+                    .then(() => {
+                        this.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="far fa-copy"></i>';
+                        }, 2000);
+                    });
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

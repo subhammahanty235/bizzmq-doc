@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BizzMQ - Lightweight Redis-based Message Queue</title>
+    <link rel="stylesheet" href="./style//main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <!-- <img src="./assets//bizzmq-logo.png" alt="BizzMQ Logo"> -->
+                <span>BizzMQ</span>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active">Home</a>
+                <div class="dropdown">
+                    <button class="dropdown-btn">Documentation <i class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-content">
+                        <a href="/docs/node-docs.html">BizzMQ Node</a>
+                        <a href="/docs/go-docs.html">BizzMQ Go</a>
+                    </div>
+                </div>
+                <a href="#quick-start">Getting Started</a>
+                <!-- <a href="/examples">Examples</a> -->
+                <a href="https://github.com/subhammahanty235/bizzmq-node/issues" target="_blank">Report Bug</a>
+            </div>
+            <div class="cta-buttons">
+                <a href="https://github.com/subhammahanty235/bizzmq-node" class="btn-secondary"><i
+                        class="fab fa-github"></i> GitHub</a>
+                <!-- <a href="/getting-started" class="btn-primary">Get Started</a> -->
+            </div>
+            <div class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Lightweight Redis-based Message Queue</h1>
+                <p class="subtitle">A simple yet powerful message queue with Real-Time processing for Node.js and Go
+                    applications</p>
+                <div class="hero-buttons">
+                    <a href="/docs/node-docs.html" class="btn-primary">Try BizzMQ Node</a>
+                    <a href="/docs/go-docs.html" class="btn-secondary">Try BizzMQ Go</a>
+                </div>
+                <div class="installation-command">
+                    <pre><code>npm install bizzmq</code></pre>
+                    <button class="copy-btn" aria-label="Copy installation command">
+                        <i class="far fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="/api/placeholder/450/350" alt="BizzMQ Illustration">
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <div class="section-header">
+                <h2>Features</h2>
+                <p>Powerful, yet easy to use message queue functionality</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Redis-Based Queue</h3>
+                    <p>Leverage Redis for reliable message storage and processing with minimal configuration</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Real-Time Processing</h3>
+                    <p>Immediate job notification with Redis Pub/Sub and automatic fallback polling</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Dead Letter Queue</h3>
+                    <p>Automatic handling of failed messages with configurable DLQ support</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <h3>Retry Mechanism</h3>
+                    <p>Configurable retry attempts for failed jobs before they're moved to DLQ</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-save"></i>
+                    </div>
+                    <h3>Message Persistence</h3>
+                    <p>Jobs are safely stored in Redis until successfully processed</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-feather"></i>
+                    </div>
+                    <h3>Low Overhead</h3>
+                    <p>Minimal dependencies and lightweight design for optimal performance</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="quick-start" id="quick-start">
+        <div class="container">
+            <div class="section-header">
+                <h2>Quick Start</h2>
+                <p>Get up and running in minutes</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-lang="node">Node.js</button>
+                <button class="tab-btn" data-lang="go">Go</button>
+            </div>
+
+            <div class="code-preview" id="node-code">
+                <pre><code class="language-javascript">const BizzMQ = require('bizzmq');
+    
+    async function main() {
+      // Initialize with Redis connection string
+      const mq = new BizzMQ('redis://localhost:6379');
+      
+      // Create a queue
+      await mq.createQueue('email-queue');
+      
+      // Add a job to the queue
+      const jobData = {
+        to: "user@example.com",
+        subject: "Welcome to Our Service",
+        body: "Thank you for signing up!"
+      };
+      
+      await mq.publishMessageToQueue('email-queue', jobData);
+      
+      // Process jobs
+      const cleanup = await mq.consumeMessageFromQueue('email-queue', async (data) => {
+        console.log(`Sending email to ${data.to}`);
+        // Your job processing logic here
+        console.log('Email sent successfully');
+      });
+    }
+    
+    main().catch(console.error);</code></pre>
+                <a href="/docs/node-docs.html" class="btn-text">View full documentation <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <div class="code-preview" id="go-code" style="display: none;">
+                <pre><code class="language-go">package main
+    
+    import (
+        "context"
+        "encoding/json"
+        "fmt"
+        "log"
+    
+        "github.com/bizzmq/go-bizzmq"
+    )
+    
+    type EmailJob struct {
+        To      string `json:"to"`
+        Subject string `json:"subject"`
+        Body    string `json:"body"`
+    }
+    
+    func main() {
+        // Initialize with Redis connection string
+        mq, err := bizzmq.New("redis://localhost:6379")
+        if err != nil {
+            log.Fatalf("Failed to connect to BizzMQ: %v", err)
+        }
+        defer mq.Close()
+    
+        // Create a queue
+        err = mq.CreateQueue("email-queue")
+        if err != nil {
+            log.Fatalf("Failed to create queue: %v", err)
+        }
+    
+        // Add a job to the queue
+        jobData := EmailJob{
+            To:      "user@example.com",
+            Subject: "Welcome to Our Service",
+            Body:    "Thank you for signing up!",
+        }
+    
+        err = mq.PublishMessage("email-queue", jobData)
+        if err != nil {
+            log.Fatalf("Failed to publish message: %v", err)
+        }
+    
+        // Process jobs
+        ctx := context.Background()
+        err = mq.ConsumeMessages(ctx, "email-queue", func(msg []byte) error {
+            var job EmailJob
+            if err := json.Unmarshal(msg, &job); err != nil {
+                return err
+            }
+            
+            fmt.Printf("Sending email to %s\n", job.To)
+            // Your job processing logic here
+            fmt.Println("Email sent successfully")
+            return nil
+        })
+        if err != nil {
+            log.Fatalf("Failed to consume messages: %v", err)
+        }
+    }</code></pre>
+                <a href="/docs/go-docs.html" class="btn-text">View full documentation <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+    <section class="use-cases">
+        <div class="container">
+            <div class="section-header">
+                <h2>Perfect for</h2>
+                <p>Common use cases for BizzMQ</p>
+            </div>
+
+            <div class="use-cases-grid">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h3>Email Processing</h3>
+                    <p>Handle email sending asynchronously without blocking your main application flow</p>
+                </div>
+
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="fas fa-file-export"></i>
+                    </div>
+                    <h3>Data Export</h3>
+                    <p>Manage resource-intensive exports and report generation in the background</p>
+                </div>
+
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h3>Media Processing</h3>
+                    <p>Process image and video uploads efficiently without affecting user experience</p>
+                </div>
+
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="fas fa-webhook"></i>
+                    </div>
+                    <h3>Webhook Delivery</h3>
+                    <p>Reliable webhook delivery with automatic retries for failed attempts</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contribute">
+        <div class="container">
+            <div class="section-header">
+                <h2>Contribute</h2>
+                <p>Join our community and help improve BizzMQ</p>
+            </div>
+
+            <div class="contribute-grid">
+                <div class="contribute-card">
+                    <div class="contribute-icon">
+                        <i class="fab fa-node-js"></i>
+                    </div>
+                    <h3>BizzMQ Node</h3>
+                    <p>Contribute to the Node.js implementation of BizzMQ</p>
+                    <a href="https://github.com/subhammahanty235/bizzmq-node" class="card-link"
+                        target="_blank">Contribute <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="contribute-card">
+                    <div class="contribute-icon">
+                        <i class="fab fa-golang"></i>
+                    </div>
+                    <h3>BizzMQ Go</h3>
+                    <p>Help build and improve the Go implementation</p>
+                    <a href="https://github.com/subhammahanty235/bizzmq-go" class="card-link" target="_blank">Contribute
+                        <i class="fas fa-arrow-right"></i></a>
+                </div>
+
+                <div class="contribute-card">
+                    <div class="contribute-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h3>Documentation</h3>
+                    <p>Improve this documentation site and help others learn BizzMQ</p>
+                    <a href="https://github.com/subhammahanty235/bizzmq-docs" class="card-link"
+                        target="_blank">Contribute <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-branding">
+                    <div class="footer-logo">
+                        <span>BizzMQ</span>
+                    </div>
+                    <p>A lightweight Redis-based message queue with Dead Letter Queue support</p>
+                    <div class="footer-social">
+                        <a href="https://github.com/subhammahanty235" target="_blank"><i class="fab fa-github"></i></a>
+                        <!-- <a href="#" target="_blank"><i class="fab fa-twitter"></i></a> -->
+                        <a href="#" target="_blank"><i class="fab fa-npm"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-links-column">
+                        <h4>Documentation</h4>
+                        <ul>
+                            <li><a href="/docs/node-docs.html">BizzMQ Node</a></li>
+                            <li><a href="/docs/go-docs.html">BizzMQ Go</a></li>
+                            <li><a href="/getting-started">Getting Started</a></li>
+                            <li><a href="/examples">Examples</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-links-column">
+                        <h4>Community</h4>
+                        <ul>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-node" target="_blank">GitHub</a>
+                            </li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-node/issues" target="_blank">Report
+                                    Bug</a></li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-node/issues" target="_blank">Request
+                                    Feature</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-links-column">
+                        <h4>Contribute</h4>
+                        <ul>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-node" target="_blank">BizzMQ
+                                    Node</a></li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-go" target="_blank">BizzMQ Go</a>
+                            </li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-docs"
+                                    target="_blank">Documentation</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 BizzMQ. Created by <a href="https://linkedin.com/subham-mahanty" target="_blank">Subham
+                        Mahanty</a>.</p>
+                <div class="footer-legal">
+                    <a href="/terms">Terms</a>
+                    <a href="/privacy">Privacy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Basic tab functionality
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+                // In a real implementation, this would change the code example
+            });
+        });
+
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
+            document.querySelector('.nav-links').classList.toggle('active');
+            this.classList.toggle('active');
+        });
+
+        // Copy to clipboard functionality
+        document.querySelector('.copy-btn').addEventListener('click', function () {
+            const commandText = document.querySelector('.installation-command code').textContent;
+            navigator.clipboard.writeText(commandText)
+                .then(() => {
+                    this.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="far fa-copy"></i>';
+                    }, 2000);
+                });
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const nodeCode = document.getElementById('node-code');
+            const goCode = document.getElementById('go-code');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    // Remove active class from all buttons
+                    tabBtns.forEach(b => b.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    this.classList.add('active');
+
+                    // Show the corresponding code preview
+                    const lang = this.getAttribute('data-lang');
+                    if (lang === 'node') {
+                        nodeCode.style.display = 'block';
+                        goCode.style.display = 'none';
+                    } else if (lang === 'go') {
+                        nodeCode.style.display = 'none';
+                        goCode.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
