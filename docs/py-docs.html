@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BizzMQ Go Documentation</title>
+    <title>BizzMQ Python Documentation</title>
     <link rel="stylesheet" href="../style//docs.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,15 +24,16 @@
                     <button class="dropdown-btn active">Documentation <i class="fas fa-chevron-down"></i></button>
                     <div class="dropdown-content">
                         <a href="/docs/node-docs.html">BizzMQ Node</a>
-                        <a href="/docs/go-docs.html" class="active">BizzMQ Go</a>
+                        <a href="/docs/go-docs.html">BizzMQ Go</a>
+                        <a href="/docs/py-docs.html" class="active">BizzMQ Python</a>
                     </div>
                 </div>
                 <a href="/getting-started">Getting Started</a>
                 <a href="/examples">Examples</a>
-                <a href="https://github.com/subhammahanty235/bizzmq-go/issues" target="_blank">Report Bug</a>
+                <a href="https://github.com/subhammahanty235/bizzmq-py/issues" target="_blank">Report Bug</a>
             </div>
             <div class="cta-buttons">
-                <a href="https://github.com/subhammahanty235/bizzmq-go" class="btn-secondary"><i
+                <a href="https://github.com/subhammahanty235/bizzmq-py" class="btn-secondary"><i
                         class="fab fa-github"></i> GitHub</a>
                 <a href="/getting-started" class="btn-primary">Get Started</a>
             </div>
@@ -75,15 +76,15 @@
 
         <main class="docs-content">
             <div class="docs-header">
-                <h1>BizzMQ Go Documentation</h1>
-                <div class="version-badge">v1.1.0</div>
+                <h1>BizzMQ Python Documentation</h1>
+                <div class="version-badge">v0.1.0</div>
             </div>
 
             <section id="introduction" class="docs-section">
                 <h2>Introduction</h2>
-                <p>BizzMQ-Go is a lightweight Redis-based message queue system with Dead Letter Queue support, implemented in Go.</p>
+                <p>BizzMQ-Py is a lightweight Redis-based message queue system with Dead Letter Queue support, implemented in Python.</p>
                 <div class="installation-command">
-                    <pre><code>go get github.com/subhammahanty235/bizzmq-go</code></pre>
+                    <pre><code>pip install bizzmq</code></pre>
                     <button class="copy-btn" aria-label="Copy installation command">
                         <i class="far fa-copy"></i>
                     </button>
@@ -94,7 +95,7 @@
                 <h2>Features</h2>
                 <ul class="feature-list">
                     <li>
-                        <div class="feature-title"><i class="fas fa-database"></i> Simple Redis-Based Queue</div>
+                        <div class="feature-title"><i class="fas fa-database"></i> Redis-Based Queue</div>
                         <div class="feature-desc">Leverages Redis for reliable message storage and processing</div>
                     </li>
                     <li>
@@ -118,28 +119,28 @@
                         <div class="feature-desc">Robust error management with detailed tracking in failed messages</div>
                     </li>
                     <li>
-                        <div class="feature-title"><i class="fas fa-code"></i> Go Idiomatic Design</div>
-                        <div class="feature-desc">Follows Go best practices with context support and proper error handling</div>
+                        <div class="feature-title"><i class="fas fa-code"></i> Pythonic Design</div>
+                        <div class="feature-desc">Follows Python best practices with clean, well-structured code</div>
                     </li>
                     <li>
-                        <div class="feature-title"><i class="fas fa-random"></i> Concurrency Support</div>
-                        <div class="feature-desc">Leverages Go's goroutines for efficient parallel processing</div>
+                        <div class="feature-title"><i class="fas fa-random"></i> Concurrent Processing</div>
+                        <div class="feature-desc">Uses threading for efficient parallel message processing</div>
                     </li>
                 </ul>
             </section>
 
             <section id="installation" class="docs-section">
                 <h2>Installation</h2>
-                <p>Install BizzMQ-Go using go get:</p>
+                <p>Install BizzMQ-Py using pip:</p>
                 <div class="code-block">
-                    <pre><code>go get github.com/subhammahanty235/bizzmq-go</code></pre>
+                    <pre><code>pip install bizzmq</code></pre>
                 </div>
             </section>
 
             <section id="prerequisites" class="docs-section">
                 <h2>Prerequisites</h2>
                 <ul>
-                    <li>Go 1.18+ (tested with Go 1.22.3)</li>
+                    <li>Python 3.8 or higher</li>
                     <li>Redis server (v5 or higher)</li>
                 </ul>
             </section>
@@ -150,192 +151,162 @@
                 <div id="basic-usage" class="subsection">
                     <h3>Basic Usage</h3>
                     <div class="code-block">
-                        <pre><code>package main
+                        <pre><code>from bizzmq import BizzMQ
+from bizzmq.queue import QueueOptions
+from bizzmq.message import MessageOptions
+import time
+import threading
+import signal
 
-import (
-    "context"
-    "fmt"
-    "log"
-    "os"
-    "os/signal"
-    "syscall"
+def message_handler(message):
+    print(f"Processing message: {message}")
+    # Your job processing logic here
+    return True
 
-    "github.com/subhammahanty235/bizzmq-go"
-)
-
-func main() {
-    // Initialize with Redis connection string
-    mq, err := bizzmq.NewBizzMQ("redis://localhost:6379")
-    if err != nil {
-        log.Fatalf("Failed to connect to Redis: %v", err)
-    }
-    defer mq.Close()
+def main():
+    # Initialize with Redis connection string
+    client = BizzMQ(redis_url="redis://localhost:6379")
     
-    ctx := context.Background()
+    # Create a queue
+    queue_name = "email-queue"
+    options = QueueOptions(config_dead_letter_queue=True)
+    client.create_queue(queue_name, options)
     
-    // Create a queue
-    err = mq.CreateQueue(ctx, "email-queue", bizzmq.QueueOptions{
-        ConfigDeadLetterQueue: true,
-    })
-    if err != nil {
-        log.Fatalf("Failed to create queue: %v", err)
-    }
-    
-    // Add a job to the queue
-    jobData := map[string]interface{}{
-        "to":      "user@example.com",
+    # Add a job to the queue
+    job_data = {
+        "to": "user@example.com",
         "subject": "Welcome to Our Service",
-        "body":    "Thank you for signing up!",
+        "body": "Thank you for signing up!"
     }
     
-    messageID, err := mq.PublishMessageToQueue(ctx, "email-queue", jobData, bizzmq.MessageOptions{})
-    if err != nil {
-        log.Fatalf("Failed to publish message: %v", err)
-    }
-    fmt.Printf("Published message with ID: %s\n", messageID)
+    message_id = client.publish_message_to_queue(queue_name, job_data, MessageOptions())
+    print(f"Published message with ID: {message_id}")
     
-    // Start consuming messages
-    cleanup, err := mq.ConsumeMessageFromQueue(ctx, "email-queue", func(data map[string]interface{}) error {
-        fmt.Printf("Processing message: %v\n", data)
-        // Your job processing logic here
-        return nil
-    })
-    if err != nil {
-        log.Fatalf("Failed to start consumer: %v", err)
-    }
+    # Set up graceful shutdown
+    stop_event = threading.Event()
+    
+    def signal_handler(sig, frame):
+        print("\nShutting down...")
+        if cleanup:
+            cleanup()
+        stop_event.set()
+    
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+    
+    # Start consuming messages
+    cleanup = client.consume_message_from_queue(queue_name, message_handler)
+    
+    try:
+        print("Consumer running. Press Ctrl+C to stop...")
+        stop_event.wait()
+    except KeyboardInterrupt:
+        print("Shutting down...")
+        if cleanup:
+            cleanup()
 
-    // Handle graceful shutdown
-    sigCh := make(chan os.Signal, 1)
-    signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-    
-    <-sigCh
-    fmt.Println("Shutting down consumer...")
-    
-    // Call cleanup function
-    cleanup()
-    
-    fmt.Println("Consumer shutdown complete")
-}</code></pre>
+if __name__ == "__main__":
+    main()</code></pre>
                     </div>
                 </div>
 
                 <div id="using-dlq" class="subsection">
                     <h3>Using Dead Letter Queue with Retries</h3>
                     <div class="code-block">
-                        <pre><code>package main
+                        <pre><code>from bizzmq import BizzMQ
+from bizzmq.queue import QueueOptions
+from bizzmq.message import MessageOptions
+import time
+import threading
+import signal
 
-import (
-    "context"
-    "errors"
-    "fmt"
-    "log"
-    "os"
-    "os/signal"
-    "syscall"
+def intentional_failure_handler(message):
+    print(f"Receiving message: {message}")
+    # Simulate a failure
+    raise Exception("Simulated failure to demonstrate DLQ")
 
-    "github.com/subhammahanty235/bizzmq-go"
-)
-
-func main() {
-    // Initialize with Redis connection string
-    mq, err := bizzmq.NewBizzMQ("redis://localhost:6379")
-    if err != nil {
-        log.Fatalf("Failed to connect to Redis: %v", err)
-    }
-    defer mq.Close()
+def main():
+    # Initialize with Redis connection string
+    client = BizzMQ(redis_url="redis://localhost:6379")
     
-    ctx := context.Background()
+    # Create a queue with Dead Letter Queue enabled and custom retry settings
+    queue_name = "email-queue"
+    options = QueueOptions(
+        config_dead_letter_queue=True,  # Enable DLQ
+        max_retries=3                   # Try 3 times before moving to DLQ
+    )
+    client.create_queue(queue_name, options)
     
-    // Create a queue with Dead Letter Queue enabled and custom retry settings
-    err = mq.CreateQueue(ctx, "email-queue", bizzmq.QueueOptions{
-        ConfigDeadLetterQueue: true,  // Enable DLQ
-        MaxRetries:            3,     // Try 3 times before moving to DLQ
-    })
-    if err != nil {
-        log.Fatalf("Failed to create queue: %v", err)
-    }
-    
-    // Add a job
-    jobData := map[string]interface{}{
-        "to":      "user@example.com",
+    # Add a job
+    job_data = {
+        "to": "user@example.com",
         "subject": "Welcome to Our Service",
-        "body":    "Thank you for signing up!",
+        "body": "Thank you for signing up!"
     }
     
-    messageID, err := mq.PublishMessageToQueue(ctx, "email-queue", jobData, bizzmq.MessageOptions{})
-    if err != nil {
-        log.Fatalf("Failed to publish message: %v", err)
-    }
-    fmt.Printf("Published message with ID: %s\n", messageID)
+    message_id = client.publish_message_to_queue(queue_name, job_data, MessageOptions())
+    print(f"Published message with ID: {message_id}")
     
-    // Process jobs with error handling
-    cleanup, err := mq.ConsumeMessageFromQueue(ctx, "email-queue", func(data map[string]interface{}) error {
-        fmt.Printf("Sending email to %s\n", data["to"])
-        
-        // Simulate failure for demonstration
-        return errors.New("simulated failure sending email")
-    })
-    if err != nil {
-        log.Fatalf("Failed to consume messages: %v", err)
-    }
+    # Set up graceful shutdown
+    stop_event = threading.Event()
     
-    // Let the consumer run for a while so we can observe retries
-    fmt.Println("Consumer running. Press Ctrl+C to stop...")
+    def signal_handler(sig, frame):
+        print("\nShutting down...")
+        if cleanup:
+            cleanup()
+        stop_event.set()
     
-    // Set up graceful shutdown
-    sigCh := make(chan os.Signal, 1)
-    signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-    <-sigCh
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
     
-    fmt.Println("Shutting down...")
-    cleanup()
-}</code></pre>
+    # Process jobs with error handling
+    cleanup = client.consume_message_from_queue(queue_name, intentional_failure_handler)
+    
+    try:
+        print("Consumer running. Press Ctrl+C to stop...")
+        stop_event.wait()
+    except KeyboardInterrupt:
+        print("Shutting down...")
+        if cleanup:
+            cleanup()
+
+if __name__ == "__main__":
+    main()</code></pre>
                     </div>
                 </div>
 
                 <div id="working-with-dlq" class="subsection">
                     <h3>Working with Dead Letter Queue</h3>
                     <div class="code-block">
-                        <pre><code>package main
+                        <pre><code>from bizzmq import BizzMQ
+from bizzmq.queue import QueueOptions
+from bizzmq.message import MessageOptions
 
-import (
-    "context"
-    "fmt"
-    "log"
+def dlq_message_handler(message):
+    print(f"Processing DLQ message: {message}")
+    # Process the failed message
+    return True
 
-    "github.com/subhammahanty235/bizzmq-go"
-)
+def main():
+    client = BizzMQ(redis_url="redis://localhost:6379")
+    
+    # Set up a queue name
+    original_queue = "email-queue"
+    dlq_name = f"{original_queue}_dlq"
+    
+    # Set up a consumer for the DLQ
+    cleanup = client.consume_message_from_queue(dlq_name, dlq_message_handler)
+    
+    # To retry a specific message from DLQ (future implementation)
+    # This functionality is planned for upcoming releases
+    # message_id = "message:1234567890123"
+    # success = client.retry_dead_letter_message(original_queue, message_id)
+    
+    # Don't forget to clean up when done
+    cleanup()
 
-func main() {
-    mq, err := bizzmq.NewBizzMQ("redis://localhost:6379")
-    if err != nil {
-        log.Fatalf("Failed to connect to Redis: %v", err)
-    }
-    defer mq.Close()
-    
-    ctx := context.Background()
-    
-    // Get messages from the DLQ
-    dlqName := "email-queue_dlq" // DLQs are named as originalQueueName_dlq
-    messagesJSON, err := mq.GetDeadLetterMessages(ctx, dlqName, 10)
-    if err != nil {
-        log.Fatalf("Failed to get DLQ messages: %v", err)
-    }
-    
-    fmt.Println("Failed messages in DLQ:")
-    fmt.Println(messagesJSON)
-    
-    // Retry a specific message from the DLQ
-    messageID := "message:1712345678901" // Example message ID
-    success, err := mq.RetryDeadLetterMessage(ctx, "email-queue", messageID)
-    if err != nil {
-        log.Fatalf("Failed to retry message: %v", err)
-    }
-    
-    if success {
-        fmt.Printf("Message %s successfully moved back to the original queue\n", messageID)
-    }
-}</code></pre>
+if __name__ == "__main__":
+    main()</code></pre>
                     </div>
                 </div>
             </section>
@@ -346,11 +317,11 @@ func main() {
                 <div id="constructor" class="subsection">
                     <h3>Constructor</h3>
                     <div class="api-item">
-                        <h4><code>NewBizzMQ(redisURI string) (*BizzMQ, error)</code></h4>
+                        <h4><code>BizzMQ(redis_url: str)</code></h4>
                         <p>Creates a new BizzMQ instance connected to the specified Redis server.</p>
                         <ul class="params">
-                            <li><code>redisURI</code> (string): Redis connection string (e.g., "redis://localhost:6379")</li>
-                            <li>Returns: A BizzMQ instance and any error that occurred during initialization</li>
+                            <li><code>redis_url</code> (string): Redis connection string (e.g., "redis://localhost:6379")</li>
+                            <li>Returns: A BizzMQ instance</li>
                         </ul>
                     </div>
                 </div>
@@ -359,52 +330,49 @@ func main() {
                     <h3>Queue Management</h3>
                     
                     <div class="api-item">
-                        <h4><code>CreateQueue(ctx context.Context, queueName string, options QueueOptions) error</code></h4>
+                        <h4><code>create_queue(queue_name: str, options: QueueOptions) -> None</code></h4>
                         <p>Creates a new queue. If the queue already exists, this operation is skipped.</p>
                         <ul class="params">
-                            <li><code>ctx</code> (context.Context): Context for the operation</li>
-                            <li><code>queueName</code> (string): Name of the queue to create</li>
+                            <li><code>queue_name</code> (str): Name of the queue to create</li>
                             <li><code>options</code> (QueueOptions): Queue configuration options
                                 <ul>
-                                    <li><code>ConfigDeadLetterQueue</code> (bool): Whether to create a DLQ for this queue</li>
-                                    <li><code>MaxRetries</code> (int): Maximum number of retry attempts before sending to DLQ</li>
-                                    <li><code>Retry</code> (int): Initial retry count for messages in this queue</li>
+                                    <li><code>config_dead_letter_queue</code> (bool): Whether to create a DLQ for this queue</li>
+                                    <li><code>max_retries</code> (int): Maximum number of retry attempts before sending to DLQ</li>
+                                    <li><code>retry</code> (int): Initial retry count for messages in this queue</li>
                                 </ul>
                             </li>
                         </ul>
                     </div>
 
                     <div class="api-item">
-                        <h4><code>PublishMessageToQueue(ctx context.Context, queueName string, message interface{}, options MessageOptions) (string, error)</code></h4>
+                        <h4><code>publish_message_to_queue(queue_name: str, message: Any, message_options: MessageOptions) -> str</code></h4>
                         <p>Publishes a message to the specified queue.</p>
                         <ul class="params">
-                            <li><code>ctx</code> (context.Context): Context for the operation</li>
-                            <li><code>queueName</code> (string): Name of the queue</li>
-                            <li><code>message</code> (interface{}): The message/job data to be processed</li>
-                            <li><code>options</code> (MessageOptions): Optional message-specific settings
+                            <li><code>queue_name</code> (str): Name of the queue</li>
+                            <li><code>message</code> (Any): The message/job data to be processed</li>
+                            <li><code>message_options</code> (MessageOptions): Optional message-specific settings
                                 <ul>
-                                    <li><code>Priority</code> (int64): Message priority level</li>
-                                    <li><code>Retries</code> (int64): Custom retry setting for this message</li>
+                                    <li><code>priority</code> (int): Message priority level</li>
+                                    <li><code>retries</code> (int): Custom retry setting for this message</li>
                                 </ul>
                             </li>
                         </ul>
-                        <p>Returns the generated message ID and any error that occurred.</p>
+                        <p>Returns the generated message ID.</p>
                     </div>
 
                     <div class="api-item">
-                        <h4><code>ConsumeMessageFromQueue(ctx context.Context, queueName string, handler JobHandler) (ConsumerCleanup, error)</code></h4>
+                        <h4><code>consume_message_from_queue(queue_name: str, handler: Callable[[Dict[str, Any]], None]) -> Callable</code></h4>
                         <p>Starts consuming messages from the specified queue.</p>
                         <ul class="params">
-                            <li><code>ctx</code> (context.Context): Context for the operation</li>
-                            <li><code>queueName</code> (string): Name of the queue to consume from</li>
-                            <li><code>handler</code> (JobHandler): Function to process each message
+                            <li><code>queue_name</code> (str): Name of the queue to consume from</li>
+                            <li><code>handler</code> (Callable): Function to process each message
                                 <ul>
-                                    <li>Function signature: <code>func(message map[string]interface{}) error</code></li>
-                                    <li>Should return an error if processing fails</li>
+                                    <li>Function signature: <code>def handler(message: Dict[str, Any]) -> None</code></li>
+                                    <li>Should return None if processing is successful, or raise an exception if it fails</li>
                                 </ul>
                             </li>
                         </ul>
-                        <p>Returns a cleanup function that should be called to stop consuming, and any error that occurred.</p>
+                        <p>Returns a cleanup function that should be called to stop consuming.</p>
                     </div>
                 </div>
 
@@ -412,41 +380,39 @@ func main() {
                     <h3>Dead Letter Queue Management</h3>
                     
                     <div class="api-item">
-                        <h4><code>GetDeadLetterMessages(ctx context.Context, queueName string, limit int) (string, error)</code></h4>
-                        <p>Retrieves messages from the dead letter queue as a JSON string.</p>
+                        <h4><code>get_dead_letter_queue_messages(queue_name: str, limit: int = 10) -> List[Dict]</code></h4>
+                        <p>Planned for future releases: Retrieves messages from the dead letter queue.</p>
                         <ul class="params">
-                            <li><code>ctx</code> (context.Context): Context for the operation</li>
-                            <li><code>queueName</code> (string): Name of the DLQ to get messages from</li>
-                            <li><code>limit</code> (int): Maximum number of messages to retrieve (default: 100)</li>
+                            <li><code>queue_name</code> (str): Name of the DLQ to get messages from</li>
+                            <li><code>limit</code> (int): Maximum number of messages to retrieve</li>
                         </ul>
-                        <p>Returns a JSON string containing the messages and any error that occurred.</p>
+                        <p>Returns a list of messages from the DLQ.</p>
                     </div>
 
                     <div class="api-item">
-                        <h4><code>RetryDeadLetterMessage(ctx context.Context, queueName string, messageID string) (bool, error)</code></h4>
-                        <p>Moves a message from the dead letter queue back to the original queue for retry.</p>
+                        <h4><code>retry_dead_letter_message(queue_name: str, message_id: str) -> bool</code></h4>
+                        <p>Planned for future releases: Moves a message from the dead letter queue back to the original queue for retry.</p>
                         <ul class="params">
-                            <li><code>ctx</code> (context.Context): Context for the operation</li>
-                            <li><code>queueName</code> (string): Name of the original queue</li>
-                            <li><code>messageID</code> (string): ID of the message to retry</li>
+                            <li><code>queue_name</code> (str): Name of the original queue</li>
+                            <li><code>message_id</code> (str): ID of the message to retry</li>
                         </ul>
-                        <p>Returns a boolean indicating success and any error that occurred.</p>
+                        <p>Returns a boolean indicating success.</p>
                     </div>
                 </div>
             </section>
 
             <section id="error-handling" class="docs-section">
                 <h2>Error Handling and Retry Flow</h2>
-                <p>When a job processing fails (handler returns an error):</p>
+                <p>When a job processing fails (handler raises an exception):</p>
                 <ol>
                     <li>The error is caught and logged</li>
-                    <li>If retry is enabled and maxRetries > 0:
+                    <li>If retry is enabled and max_retries > 0:
                         <ul>
                             <li>The job retry count is incremented</li>
                             <li>The job is added back to the queue</li>
                         </ul>
                     </li>
-                    <li>If retry count exceeds maxRetries or retries are disabled:
+                    <li>If retry count exceeds max_retries or retries are disabled:
                         <ul>
                             <li>The job is moved to the Dead Letter Queue (if enabled)</li>
                             <li>Error details are preserved with the job for debugging</li>
@@ -459,12 +425,12 @@ func main() {
                 <h2>Best Practices</h2>
                 <ol class="best-practices-list">
                     <li><strong>Always enable Dead Letter Queues</strong> for production workloads to capture failed jobs</li>
-                    <li><strong>Use appropriate contexts</strong> for proper cancellation and timeouts</li>
-                    <li><strong>Implement graceful shutdown</strong> by calling the cleanup function returned by <code>ConsumeMessageFromQueue</code></li>
-                    <li><strong>Set appropriate MaxRetries</strong> based on the nature of expected failures</li>
+                    <li><strong>Implement proper error handling</strong> in your message processor functions</li>
+                    <li><strong>Implement graceful shutdown</strong> by calling the cleanup function returned by <code>consume_message_from_queue</code></li>
+                    <li><strong>Set appropriate max_retries</strong> based on the nature of expected failures</li>
                     <li><strong>Include relevant metadata</strong> in your job data for easier debugging</li>
                     <li><strong>Check your DLQ regularly</strong> for repeated failures that might indicate systemic issues</li>
-                    <li><strong>Always use <code>defer mq.Close()</code></strong> to ensure Redis connections are properly closed</li>
+                    <li><strong>Set up proper signal handling</strong> to ensure clean shutdowns in production environments</li>
                 </ol>
             </section>
         </main>
@@ -490,6 +456,7 @@ func main() {
                         <ul>
                           <li><a href="/docs/node-docs.html">BizzMQ Node</a></li>
                           <li><a href="/docs/go-docs.html">BizzMQ Go</a></li>
+                          <li><a href="/docs/py-docs.html">BizzMQ Python</a></li>
                             <li><a href="/getting-started">Getting Started</a></li>
                             <li><a href="/examples">Examples</a></li>
                         </ul>
@@ -498,9 +465,9 @@ func main() {
                     <div class="footer-links-column">
                         <h4>Community</h4>
                         <ul>
-                            <li><a href="https://github.com/subhammahanty235/bizzmq-go" target="_blank">GitHub</a></li>
-                            <li><a href="https://github.com/subhammahanty235/bizzmq-go/issues" target="_blank">Report Bug</a></li>
-                            <li><a href="https://github.com/subhammahanty235/bizzmq-go/issues" target="_blank">Request Feature</a></li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-py" target="_blank">GitHub</a></li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-py/issues" target="_blank">Report Bug</a></li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-py/issues" target="_blank">Request Feature</a></li>
                         </ul>
                     </div>
 
@@ -509,7 +476,7 @@ func main() {
                         <ul>
                             <li><a href="https://github.com/subhammahanty235/bizzmq-node" target="_blank">BizzMQ Node</a></li>
                             <li><a href="https://github.com/subhammahanty235/bizzmq-go" target="_blank">BizzMQ Go</a></li>
-                            <li><a href="https://github.com/subhammahanty235/bizzmq-docs" target="_blank">Documentation</a></li>
+                            <li><a href="https://github.com/subhammahanty235/bizzmq-py" target="_blank">BizzMQ Python</a></li>
                         </ul>
                     </div>
                 </div>

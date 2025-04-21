@@ -26,6 +26,7 @@
                     <div class="dropdown-content">
                         <a href="/docs/node-docs.html">BizzMQ Node</a>
                         <a href="/docs/go-docs.html">BizzMQ Go</a>
+                        <a href="/docs/py-docs.html">BizzMQ Python</a>
                     </div>
                 </div>
                 <a href="#quick-start">Getting Started</a>
@@ -137,6 +138,7 @@
             <div class="tabs">
                 <button class="tab-btn active" data-lang="node">Node.js</button>
                 <button class="tab-btn" data-lang="go">Go</button>
+                <button class="tab-btn" data-lang="py">Python</button>
             </div>
 
             <div class="code-preview" id="node-code">
@@ -167,18 +169,14 @@
     }
     
     main().catch(console.error);</code></pre>
-                <a href="/docs/node-docs.html" class="btn-text">View full documentation <i class="fas fa-arrow-right"></i></a>
+                <a href="/docs/node-docs.html" class="btn-text">View full documentation <i
+                        class="fas fa-arrow-right"></i></a>
             </div>
 
             <div class="code-preview" id="go-code" style="display: none;">
                 <pre><code class="language-go">package main
     
     import (
-        "context"
-        "encoding/json"
-        "fmt"
-        "log"
-    
         "github.com/bizzmq/go-bizzmq"
     )
     
@@ -214,26 +212,52 @@
             log.Fatalf("Failed to publish message: %v", err)
         }
     
-        // Process jobs
-        ctx := context.Background()
-        err = mq.ConsumeMessages(ctx, "email-queue", func(msg []byte) error {
-            var job EmailJob
-            if err := json.Unmarshal(msg, &job); err != nil {
-                return err
-            }
-            
-            fmt.Printf("Sending email to %s\n", job.To)
-            // Your job processing logic here
-            fmt.Println("Email sent successfully")
-            return nil
-        })
-        if err != nil {
-            log.Fatalf("Failed to consume messages: %v", err)
-        }
+       
     }</code></pre>
-                <a href="/docs/go-docs.html" class="btn-text">View full documentation <i class="fas fa-arrow-right"></i></a>
+                <a href="/docs/go-docs.html" class="btn-text">View full documentation <i
+                        class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="code-preview" id="py-code" style="display: none;">
+                <pre><code class="language-python">
+    from bizzmq import BizzMQ
+    from bizzmq.queue import QueueOptions
+    from bizzmq.message import MessageOptions
+    
+    def message_handler(message):
+        print(f"Processing message: {message}")
+        print(f"Processed message successfully!")
+        return True
+    
+    async def main():
+        client = BizzMQ(redis_url="redis://localhost:6379")
+        queue_name = "email-queue"
+        options = QueueOptions(config_dead_letter_queue=1, max_retries=3)
+        client.create_queue(queue_name, options)
+    
+        message_data = {
+            "id": 1,
+            "content": "Hello from BizzMQ!",
+            "timestamp": time.time()
+        }
+    
+        client.publish_message_to_queue(queue_name, message_data, MessageOptions())
+        print(f"Starting consumer for queue: {queue_name}")
+    
+        stop_event = threading.Event()
+    
+        def signal_handler(sig, frame):
+            print("\nShutting down...")
+            if cleanup:
+                cleanup()
+            stop_event.set()
+                    </code></pre>
+                <a href="/docs/py-docs.html" class="btn-text">View full documentation <i
+                        class="fas fa-arrow-right"></i></a>
             </div>
         </div>
+
+       
+
     </section>
     <section class="use-cases">
         <div class="container">
@@ -340,6 +364,7 @@
                         <ul>
                             <li><a href="/docs/node-docs.html">BizzMQ Node</a></li>
                             <li><a href="/docs/go-docs.html">BizzMQ Go</a></li>
+                            <li><a href="/docs/py-docs.html">BizzMQ Python</a></li>
                             <li><a href="/getting-started">Getting Started</a></li>
                             <li><a href="/examples">Examples</a></li>
                         </ul>
@@ -413,6 +438,7 @@
             const tabBtns = document.querySelectorAll('.tab-btn');
             const nodeCode = document.getElementById('node-code');
             const goCode = document.getElementById('go-code');
+            const pyCode = document.getElementById('py-code');
 
             tabBtns.forEach(btn => {
                 btn.addEventListener('click', function () {
@@ -427,9 +453,16 @@
                     if (lang === 'node') {
                         nodeCode.style.display = 'block';
                         goCode.style.display = 'none';
+                        pyCode.style.display = 'none'
                     } else if (lang === 'go') {
                         nodeCode.style.display = 'none';
                         goCode.style.display = 'block';
+                        pyCode.style.display = 'none'
+                    }
+                    else if(lang == 'py'){
+                        nodeCode.style.display = 'none';
+                        goCode.style.display = 'none';
+                        pyCode.style.display = 'block'
                     }
                 });
             });
