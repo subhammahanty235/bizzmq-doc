@@ -67,6 +67,7 @@
                             <li><a href="#dlq-management">DLQ Management</a></li>
                         </ul>
                     </li>
+                    <li><a href="#priority-queue">Priority Queue Support</a></li>
                     <li><a href="#error-handling">Error Handling</a></li>
                     <li><a href="#best-practices">Best Practices</a></li>
                 </ul>
@@ -76,7 +77,7 @@
         <main class="docs-content">
             <div class="docs-header">
                 <h1>BizzMQ Node Documentation</h1>
-                <div class="version-badge">v1.1.0</div>
+                <div class="version-badge">v1.2.0</div>
             </div>
 
             <section id="introduction" class="docs-section">
@@ -361,6 +362,7 @@ example().catch(err => console.error('Error in example:', err));</code></pre>
                     </div>
                 </div>
 
+
                 <div id="dlq-management" class="subsection">
                     <h3>Dead Letter Queue Management</h3>
                     
@@ -383,6 +385,116 @@ example().catch(err => console.error('Error in example:', err));</code></pre>
                         </ul>
                         <p>Returns <code>true</code> if the message was successfully moved.</p>
                     </div>
+                </div>
+            </section>
+            <section id="priority-queue" class="docs-section">
+                <h2>Priority Queue Support</h2>
+                <p>BizzMQ now includes support for message prioritization, allowing you to process important messages first regardless of when they were added to the queue.</p>
+                
+                <div class="subsection">
+                    <h3>How It Works</h3>
+                    <p>Messages are now stored in a Redis sorted set with a score calculated based on both priority level and timestamp. This ensures that:</p>
+                    <ul>
+                        <li>Higher priority messages are processed before lower priority ones</li>
+                        <li>Messages with the same priority are processed in FIFO order (oldest first)</li>
+                    </ul>
+                </div>
+                
+                <div class="subsection">
+                    <h3>Priority Levels</h3>
+                    <p>BizzMQ supports three standard priority levels:</p>
+                    <ul class="feature-list">
+                        <li>
+                            <div class="feature-title"><i class="fas fa-angle-double-up"></i> High Priority (0)</div>
+                            <div class="feature-desc">For urgent messages that need immediate processing</div>
+                        </li>
+                        <li>
+                            <div class="feature-title"><i class="fas fa-angle-up"></i> Medium Priority (1)</div>
+                            <div class="feature-desc">Default for standard messages</div>
+                        </li>
+                        <li>
+                            <div class="feature-title"><i class="fas fa-angle-down"></i> Low Priority (2)</div>
+                            <div class="feature-desc">For background tasks that can wait</div>
+                        </li>
+                    </ul>
+                    <p class="note"><i class="fas fa-info-circle"></i> Note: Lower numeric values represent higher priority. You can also use custom numeric values for more granular prioritization.</p>
+                </div>
+                
+                <div class="subsection">
+                    <h3>Using Priority Queue</h3>
+                    <div class="code-block">
+                        <pre><code>const BizzMQ = require('bizzmq');
+            
+            async function main() {
+              const mq = new BizzMQ('redis://localhost:6379');
+              
+              // Create a queue
+              await mq.createQueue('notification-queue', {
+                config_dead_letter_queue: true,
+                maxRetries: 3
+              });
+              
+              // High priority message
+              await mq.publishMessageToQueue('notification-queue', 
+                {
+                  type: "alert",
+                  to: "admin@example.com",
+                  subject: "System Alert",
+                  body: "Urgent attention required!"
+                }, 
+                { priority: 0 }  // High priority (0)
+              );
+              
+              // Medium priority message
+              await mq.publishMessageToQueue('notification-queue', 
+                {
+                  type: "notification",
+                  to: "user@example.com",
+                  subject: "Order Confirmation",
+                  body: "Your order #12345 has been processed."
+                }, 
+                { priority: 1 }  // Medium priority (1)
+              );
+              
+              // Low priority message
+              await mq.publishMessageToQueue('notification-queue', 
+                {
+                  type: "newsletter",
+                  to: "subscriber@example.com",
+                  subject: "Weekly Newsletter",
+                  body: "Check out our latest articles!"
+                }, 
+                { priority: 2 }  // Low priority (2)
+              );
+              
+              // Consume messages (highest priority first)
+              const cleanup = await mq.consumeMessageFromQueue('notification-queue', async (data) => {
+                console.log(`Processing ${data.type} message to ${data.to}`);
+                // Your processing logic here
+              });
+            }
+            
+            main().catch(console.error);</code></pre>
+                    </div>
+                </div>
+                
+                <div class="subsection">
+                    <h3>Benefits of Priority Queue</h3>
+                    <ul class="best-practices-list">
+                        <li><strong>Improved User Experience</strong> by processing critical notifications or tasks first</li>
+                        <li><strong>Resource Optimization</strong> by handling important jobs before background tasks</li>
+                        <li><strong>Business Logic Support</strong> by mapping message importance to processing order</li>
+                        <li><strong>Graceful Handling of Traffic Spikes</strong> by ensuring critical operations continue even under load</li>
+                    </ul>
+                </div>
+                
+                <div class="subsection">
+                    <h3>Important Notes</h3>
+                    <ul>
+                        <li>Priority is specified in the <code>options</code> object when publishing a message, not in the message data itself</li>
+                        <li>If no priority is specified, the default value of 0 (high priority) is used</li>
+                        <li>The priority system works seamlessly with the Dead Letter Queue functionality</li>
+                    </ul>
                 </div>
             </section>
 
